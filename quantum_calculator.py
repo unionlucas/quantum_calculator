@@ -1,3 +1,4 @@
+import numpy
 import streamlit as st
 import numpy as np
 
@@ -5,7 +6,6 @@ tab1, tab2 = st.tabs(["Tensor", "Zustand"])
 
 with tab1:
     st.header("Tensorprodukt")
-    
 
     col1, col2, col3 = st.columns(3)
 
@@ -27,10 +27,25 @@ with tab1:
         matrix_ma2 = np.array(entries_ma2).reshape(rows_ma2, columns_ma2)
         st.write(matrix_ma2)
 
-
     with col3:
-        st.header("Ergebnis")
-        print (matrix_ma2)
+        def calc_tensor(matrix1, matrix2):
+            res_matrix = []
+            column = []
+            for i in range(len(matrix1)):
+                for x in range(len(matrix2)):
+                    for y in matrix1[i]:
+                        for j in matrix2[x]:
+                            erg = j * y
+                            column.append(erg)
+                    res_matrix.append(column)
+                    column = []
+            result = np.array(res_matrix)
+            return result
 
-with tab2: 
+
+        tensor_matrix = calc_tensor(matrix, matrix_ma2)
+        st.header("Ergebnis")
+        st.write(tensor_matrix)
+
+with tab2:
     st.header("Test")
