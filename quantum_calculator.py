@@ -1,41 +1,38 @@
-import numpy
 import streamlit as st
+
 import numpy as np
+import re
 
-tab1, tab2 = st.tabs(["Tensor", "Zustand"])
+def parse_matrix_input(matrix_string):
+    """Parses a matrix input string and returns a numpy array"""
+    matrix_string = matrix_string.strip()  # remove leading/trailing whitespace
+    
+    # split input into rows
+    rows = matrix_string.split(';')
+    if len(rows) == 0:
+        return None
+    
+    # split rows into elements
+    matrix = []
+    for row in rows:
+        elements = row.split()
+        if len(elements) == 0:
+            return None
+        
+        # convert elements to strings
+        row = [str(element) for element in elements]
+        matrix.append(row)
+    
+    return np.array(matrix)
 
-with tab1:
-    st.header("Tensorprodukt")
-
-    col1, col2, col3 = st.columns(3)
-
-    with col1:
-        st.header("Matrix 1")
-        rows_ma1 = st.number_input("Anzahl Zeilen M1", step=1)
-        columns_ma1 = st.number_input("Anzahl Spalten M1", step=1)
-        elements_ma1 = st.text_input("Zeilenweise Elemente M1")
-        entries = list(map(float, elements_ma1.split()))
-        matrix = np.array(entries).reshape(rows_ma1, columns_ma1)
-        st.write(matrix)
-
-    with col2:
-        st.header("Matrix 2")
-        rows_ma2 = st.number_input("Anzahl Zeilen", step=1)
-        columns_ma2 = st.number_input("Anzahl Spalten", step=1)
-        elements_ma2 = st.text_input("Zeilenweise Elemente")
-        entries_ma2 = list(map(float, elements_ma2.split()))
-        matrix_ma2 = np.array(entries_ma2).reshape(rows_ma2, columns_ma2)
-        st.write(matrix_ma2)
-
-    with col3:
-        def calc_tensor(matrix1, matrix2):
+def calc_tensor(matrix1, matrix2):
             res_matrix = []
             column = []
             for i in range(len(matrix1)):
                 for x in range(len(matrix2)):
                     for y in matrix1[i]:
                         for j in matrix2[x]:
-                            erg = j * y
+                            erg = j + '*' + y
                             column.append(erg)
                     res_matrix.append(column)
                     column = []
@@ -43,9 +40,29 @@ with tab1:
             return result
 
 
-        tensor_matrix = calc_tensor(matrix, matrix_ma2)
-        st.header("Ergebnis")
-        st.write(tensor_matrix)
+tab1, tab2 = st.tabs(["Tensor", "Zustand"])
+
+with tab1:
+    st.header("Tensorprodukt")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.header("Matrix 1")
+        elements_ma1 = st.text_input("Zeilenweise Elemente M1")
+        matrix = parse_matrix_input(elements_ma1)
+        st.write(matrix)
+
+    with col2:
+        st.header("Matrix 2")
+        elements_ma2 = st.text_input("")
+        matrix_ma2 = parse_matrix_input(elements_ma2)
+        st.write(matrix_ma2)
+
+
+    tensor_matrix = calc_tensor(matrix, matrix_ma2)
+    st.header("Ergebnis")
+    st.write(tensor_matrix)
 
 with tab2:
     st.header("Test")
